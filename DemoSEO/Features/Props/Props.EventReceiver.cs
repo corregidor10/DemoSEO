@@ -3,9 +3,8 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Taxonomy;
-using Microsoft.SharePoint.Navigation;
-
-
+using Microsoft.SharePoint.Publishing.Navigation;
+using Microsoft.SharePoint.Utilities;
 
 namespace DemoSEO.Features.Props
 {
@@ -42,8 +41,31 @@ namespace DemoSEO.Features.Props
 
                 foreach (TermSet termSet in termGroup.TermSets)
                 {
-                    NavigationTermSet navigationTermSet= 
+                    NavigationTermSet navigationTermSet= NavigationTermSet.GetAsResolvedByWeb(termSet, site.RootWeb, StandardNavigationProviderNames.GlobalNavigationTaxonomyProvider);
+
+                    if (navigationTermSet.IsNavigationTermSet)
+                    {
+                        foreach (NavigationTerm navTerm in navigationTermSet.Terms)
+                        {
+                            string pageUrl = SPUtility.GetServerRelativeUrlFromPrefixedUrl(navTerm.TargetUrl.Value);
+                            SPListItem pageItem = web.GetListItem(pageUrl);
+                            if (pageItem.ContentType.Name=="Welcome page") // si no funciona verificar
+                            {
+                                Term term = termSet.GetTerm(navTerm.Id);
+                                term.SetLocalCustomProperty("_Sys_Seo_PropBrowserTitle", Resources.SeoBrowserTitle);
+                                term.SetLocalCustomProperty("_Sys_Seo_PropDescription" , Resources.SeoDescription);
+                                term.SetLocalCustomProperty("_Sys_Seo_PropKeywords", Resources.SeoKeywords);
+                                term.SetLocalCustomProperty("_Sys_Seo_PropSiteNoIndex", false.ToString());
+                            }
+
+                            }
+                        break;
+
+                    }
                 }
+
+                termStore.CommitAll();
+                web.Update();
 
             }
 
