@@ -27,7 +27,7 @@ namespace DemoSEO.Features.Props
             using (SPWeb web= site.RootWeb)
             {
                 SPListItem welcomePage = web.GetListItem(web.RootFolder.WelcomePage);
-                welcomePage["SeoBrowserTitle"] = Resources.SeoBrowserTitle;
+                welcomePage["SeoBrowserTitle"] =Resources.SeoBrowserTitle;
                 welcomePage["SeoMetaDescription"]= Resources.SeoDescription;
                 welcomePage["SeoKeywords"] = Resources.SeoKeywords;
                 welcomePage["SeoRobotsNoIndex"] =false.ToString();
